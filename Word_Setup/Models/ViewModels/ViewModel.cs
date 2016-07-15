@@ -32,12 +32,7 @@ namespace Word_Setup.ViewModels
         private RelayCommand show_command;
         public RelayCommand show_Command
         {
-            get { return show_command = show_command ?? new RelayCommand(Word_Item_Num); }
-        }
-
-        public ViewModel()
-        {
-            wordlist = new ObservableCollection<Word>();
+            get { return show_command = show_command ?? new RelayCommand(Word_Export); }
         }
 
         public void Word_Item_Add()
@@ -51,7 +46,7 @@ namespace Word_Setup.ViewModels
             WordList.Add(new Word { wordStr = s, ViewModel = this ,wordImage=image});
         }
 
-        public void Word_Item_Num()
+        public void Word_Export()
         {
             FIleIO f_io=new FIleIO();
 
@@ -60,9 +55,29 @@ namespace Word_Setup.ViewModels
                 if (word.wordStr == "") WordList.Remove(word);
             }
             
-            f_io.File_Export(WordList);
+            f_io.File_Export(WordList.ToList());
             MessageBox.Show("設定が保存されました");
         }
+
+
+        public ViewModel()
+        {
+            var f_io=new FIleIO();
+            WordList = new ObservableCollection<Word>();
+            
+
+            //単語設定リストのViewModelプロパティに自分を渡してWordListに格納
+            foreach (var word in f_io.File_Import())    
+            {
+                word.ViewModel=this;
+                WordList.Add(word);
+            }
+
+            
+        }
+
+        
+
     }
 
 }

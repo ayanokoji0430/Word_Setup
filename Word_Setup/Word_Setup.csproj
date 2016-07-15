@@ -56,9 +56,9 @@
     <Compile Include="Models\Image_Generate.cs" />
     <Compile Include="Models\FIleIO.cs" />
     <Compile Include="RelayCommand.cs" />
-    <Compile Include="ViewModels\ViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="ViewModels\Word.cs" />
+    <Compile Include="Models\ViewModels\ViewModel.cs" />
+    <Compile Include="Models\ViewModels\ViewModelBase.cs" />
+    <Compile Include="Models\ViewModels\Word.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -14,9 +14,10 @@ namespace Word_Setup.Models
     {
         private string target_dir="./images/";
         private string filename_template = "word_img";
+        private string text_path="word_image.txt";
 
 
-        public void File_Export(ObservableCollection<Word> word_List){
+        public void File_Export(List<Word> word_List){
 
             DirectoryInfo di = new DirectoryInfo(target_dir);
             if (!di.Exists) di=Directory.CreateDirectory(target_dir);
@@ -25,7 +26,7 @@ namespace Word_Setup.Models
             {
                 file.Delete();
             }
-            using (StreamWriter sw = new StreamWriter("hage.txt"))
+            using (StreamWriter sw = new StreamWriter(text_path))
             {
                 for (int i = 0; i < word_List.Count; i++)
                 {
@@ -40,18 +41,68 @@ namespace Word_Setup.Models
 
                 using (FileStream stream = new FileStream(target_dir + filename_template + i + ".png", FileMode.Create))
                 {
-
                     PngBitmapEncoder encoder = new PngBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(word_List[i].wordImage));
                     encoder.Save(stream);
-                    stream.Close();                   
-
+                    stream.Close();
                 }
 
-            }
-
-            
+            }           
 
         }
+
+        public List<Word> File_Import()
+        {
+            var Import_Collection = new List<Word>();
+            var wordlist = new List<string>();
+            var img_path = new List<string>();
+            var imagelsit = new List<BitmapImage>();        
+
+            StreamReader sr = null;
+            try
+            {
+                sr = new StreamReader(text_path);
+                while (sr.Peek() >= 0)
+                {
+                    var str = sr.ReadLine().Split(',');
+                    wordlist.Add(str[0]);
+                    img_path.Add(str[1]);
+                }
+            }
+            catch
+            {
+                return new List<Word>();
+            }
+            finally
+            {
+                if (sr != null)
+                {
+                    sr.Close();
+                }
+            }
+            foreach (var path in img_path)
+            {
+                var ig = new Image_Generate();
+
+                if (File.Exists(target_dir + path))
+                {
+                    FileStream fs = new FileStream(target_dir + path, FileMode.Open, FileAccess.Read);
+                    imagelsit.Add(ig.stream_bmp(fs));
+                    fs.Close();
+                }
+                else
+                {
+                    return new List<Word>();
+                }
+            }
+
+            for (int i = 0; i < wordlist.Count; i++)
+            {
+                Import_Collection.Add(new Word {wordStr=wordlist[i],wordImage=imagelsit[i] });
+            }
+
+            return Import_Collection;
+        }
+
     }
 }
