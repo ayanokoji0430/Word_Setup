@@ -20,8 +20,6 @@ namespace Word_Setup.Models
         public void File_Export(List<Word> word_List){
 
             DirectoryInfo di = new DirectoryInfo(target_dir);
-            if (!di.Exists) di=Directory.CreateDirectory(target_dir);
-
             foreach (FileInfo file in di.GetFiles())
             {
                 file.Delete();
@@ -56,7 +54,11 @@ namespace Word_Setup.Models
             var Import_Collection = new List<Word>();
             var wordlist = new List<string>();
             var img_path = new List<string>();
-            var imagelsit = new List<BitmapImage>();        
+            var imagelsit = new List<BitmapImage>();
+
+
+            DirectoryInfo di = new DirectoryInfo(target_dir);
+            if (!di.Exists) di = Directory.CreateDirectory(target_dir);
 
             StreamReader sr = null;
             try
@@ -71,7 +73,11 @@ namespace Word_Setup.Models
             }
             catch
             {
-                return new List<Word>();
+                using (FileStream fs = File.Create("./" + text_path))
+                {
+                    fs.Close();
+                }
+                return null;
             }
             finally
             {
@@ -80,6 +86,7 @@ namespace Word_Setup.Models
                     sr.Close();
                 }
             }
+
             foreach (var path in img_path)
             {
                 var ig = new Image_Generate();
@@ -91,8 +98,17 @@ namespace Word_Setup.Models
                     fs.Close();
                 }
                 else
-                {
-                    return new List<Word>();
+                {                 
+                    foreach (FileInfo file in di.GetFiles())
+                    {
+                        file.Delete();
+                    }
+                    File.Delete(text_path);
+                    using (FileStream fs = File.Create("./"+text_path))
+                    {
+                        fs.Close();
+                    }
+                    return null;
                 }
             }
 

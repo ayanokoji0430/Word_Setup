@@ -54,9 +54,16 @@ namespace Word_Setup.ViewModels
             {
                 if (word.wordStr == "") WordList.Remove(word);
             }
-            
-            f_io.File_Export(WordList.ToList());
-            MessageBox.Show("設定が保存されました");
+
+            if (WordList.Count != 0)
+            {
+                f_io.File_Export(WordList.ToList());
+                MessageBox.Show("設定が保存されました");
+            }
+            else
+            {
+                MessageBox.Show("設定の保存に失敗しました。最低でも一つの単語を登録してください");
+            }
         }
 
 
@@ -66,11 +73,18 @@ namespace Word_Setup.ViewModels
             WordList = new ObservableCollection<Word>();
             
 
-            //単語設定リストのViewModelプロパティに自分を渡してWordListに格納
-            foreach (var word in f_io.File_Import())    
+            //単語設定リストのViewModelプロパティに自分を渡してWordListに格納t
+            try
             {
-                word.ViewModel=this;
-                WordList.Add(word);
+                foreach (var word in f_io.File_Import())
+                {
+                    word.ViewModel = this;
+                    WordList.Add(word);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("設定ファイルの読込に失敗しました。新規設定をしてください。");
             }
 
             
